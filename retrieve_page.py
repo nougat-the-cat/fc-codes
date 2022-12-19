@@ -27,7 +27,7 @@ def reload():
         driver.get(newsletter)
         title = driver.find_element(By.CLASS_NAME, "post-preview-title")
         link = title.get_attribute("href")
-        if (link != "https://forocoches.substack.com/p/unos-guaguas-un-estadio-haciendo"):
+        if (link != "https://forocoches.substack.com/p/[1ST URL LATEST WEEK HERE]"):
             driver.get(link)
             párrafos = driver.find_elements(By.XPATH, "//h3[text()='Las invis']/following-sibling::p")
             instrucciones = párrafos[1].text
