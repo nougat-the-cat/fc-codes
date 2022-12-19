@@ -18,7 +18,6 @@ def init():
 driver = init()
 
 def reload():
-    
     driver.get(newsletter)
     maybe_later = driver.find_element(By.CLASS_NAME, "maybe-later")
     if (maybe_later): 
