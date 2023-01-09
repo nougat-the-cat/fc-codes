@@ -9,12 +9,13 @@ import time
 import winsound
 
 
-TOKEN = "[your token]"
-CHAT_ID = "[your chat_id]"
+TOKEN = "[YOUR TOKEN]"
+CHAT_ID = "[YOUR CHAT ID]"
 newsletter = "https://forocoches.substack.com/"
 invitaciones = "https://forocoches.com/codigo/"
 
 bot = telegram.Bot(token=TOKEN)
+
 
 def init():
     chromedriver_autoinstaller.install()
@@ -25,7 +26,7 @@ driver = init()
 
 
 def unhyphen(string):
-    clean = string.replace("-", "")
+    clean = string.replace("-", "").replace(".", "").replace("_", "").replace(" ", "")
     return clean
 
 def swapcase(codes):
@@ -40,21 +41,47 @@ def swap(string, pos1, pos2):
     string = ''.join(string)
     return string
 
-def first_number(string):
+def first_letter(string):
     for i in range(len(string)):
-        if string[i].isdigit():
+        if string[i].isalpha():
             return i
 
-def last_number(string):
+def last_letter(string):
     for i in range(len(string)-1, -1, -1):
-        if string[i].isdigit():
+        if string[i].isalpha():
             return i
 
-def swap_numbers(string):
-    pos1 = first_number(string)
-    pos2 = last_number(string)
+def swap_letters(string):
+    pos1 = first_letter(string)
+    pos2 = last_letter(string)
     string = swap(string, pos1, pos2)
     return string
+ 
+def del_highest(string):
+  char_list = list(string)
+  highest_number = -1
+  
+  for i, c in enumerate(char_list):
+    if c.isdigit():
+      if int(c) > highest_number:
+        highest_number = int(c)
+        highest_number_index = i
+  
+  del char_list[highest_number_index]
+  return ''.join(char_list)
+
+def del_lowest(string):
+  char_list = list(string)
+  lowest_number = float('inf')
+  
+  for i, c in enumerate(char_list):
+    if c.isdigit():
+      if int(c) < lowest_number:
+        lowest_number = int(c)
+        lowest_number_index = i
+  
+  del char_list[lowest_number_index]  
+  return ''.join(char_list)
 
 
 def reload():
@@ -67,7 +94,7 @@ def reload():
         driver.get(newsletter)
         title = driver.find_element(By.CLASS_NAME, "post-preview-title")
         link = title.get_attribute("href")
-        if (link != "https://forocoches.substack.com/p/[last-week-url]"):
+        if (link != "https://forocoches.substack.com/p/una-necroporra-un-jabali-de-200kg"):
             driver.get(link)
             párrafos = driver.find_elements(By.XPATH, "//h3[text()='Las invis']/following-sibling::p")
             instrucciones = párrafos[1].text
@@ -75,16 +102,16 @@ def reload():
             
             códigos = list(map(unhyphen, códigos))
             swapped = list(map(swapcase, códigos))
-            first_last_num_swapped_swap = list(map(swap_numbers, swapped))
-            first_last_num_swap = list(map(swap_numbers, códigos))
-            
+            highest_del = list(map(del_highest, swapped))
+            lowest_del = list(map(del_lowest, swapped))
+
             bot.send_message(chat_id=CHAT_ID, text=instrucciones)
             bot.send_message(chat_id=CHAT_ID, text=invitaciones)
             bot.send_message(chat_id=CHAT_ID, text="Sin guiones: \n\n" + str(códigos))
-            bot.send_message(chat_id=CHAT_ID, text="May. por minúsc.: \n\n" + str(swapped))
-            bot.send_message(chat_id=CHAT_ID, text="May. por minúsc. y primer por últ. núm. : \n\n" + str (first_last_num_swapped_swap))
-            bot.send_message(chat_id=CHAT_ID, text="Solo primer por últ. núm.: \n\n" + str(first_last_num_swap))
-            
+            bot.send_message(chat_id=CHAT_ID, text="Sin guiones, may. por minúsc. y viceversa: \n\n" + str(swapped))
+            bot.send_message(chat_id=CHAT_ID, text="Sin guiones, may. por minúsc. y viceversa, núm. más alto eliminado: \n\n" + str(highest_del))
+            bot.send_message(chat_id=CHAT_ID, text="Sin guiones, may. por minúsc. y viceversa, núm. más bajo eliminado: \n\n" + str(lowest_del))
+
             note_freqs = {
                 "B3": 246.9, "C4": 261.63, "C#4": 277.2, "D4": 293.66, "Eb4": 311.1, "E4": 329.63, "F4": 349.23, 
                 "F#4": 370, "G4": 392.00, "G#4": 415.3, "A4": 440.00, "Bb4": 466.2, "B4": 493.88, " ": 37,
