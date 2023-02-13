@@ -39,8 +39,8 @@ def reload():
         if (link != "https://forocoches.substack.com/p/una-necroporra-un-jabali-de-200kg"):
             driver.get(link)
             párrafos = driver.find_elements(By.XPATH, "//h3[text()='Las invis']/following-sibling::p")
-            instrucciones = párrafos[1].text
-            códigos = [párrafos[2].text, párrafos[3].text, párrafos[4].text]
+            instrucciones = párrafos[0].text
+            códigos = [párrafos[1].text, párrafos[2].text, párrafos[3].text]
             
             códigos = list(map(unhyphen, códigos))
             swapped = list(map(swapcase, códigos))
